@@ -1,0 +1,16 @@
+#!/bin/bash
+#-----------------------------------------------------------
+#   Autor       : ucabrera
+#   Date        : 23/01/2020
+#   
+#   VAR_VARNAME     Local vars
+#   PHO_VARNAME     Pentaho vars
+#-----------------------------------------------------------
+
+TG_NOTIFY_FINISH_TO=
+TG_NOTIFY_FAILURE_TO="-317185794"
+TG_NOTIFY_SUCCESS_TO=
+
+# Fixtures
+PHO_FILE_SOURCE_1="https://www.football-data.co.uk/fixtures.csv"
+PHO_FILE_TARGET_1="$PHO_JOB_DATA/fixtures.csv"

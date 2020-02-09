@@ -1,0 +1,91 @@
+#!/bin/bash
+#-----------------------------------------------------------
+#   Autor       : ucabrera
+#   Date        : 18/01/2020
+#   
+#   VAR_VARNAME     Local vars
+#   PHO_VARNAME     Pentaho vars
+#-----------------------------------------------------------
+
+TG_NOTIFY_FINISH_TO=
+# TG_NOTIFY_FAILURE_TO="-317185794"
+TG_NOTIFY_SUCCESS_TO=
+
+TG_FILE_SEASON="1819"
+
+# England Football Results
+PHO_FILE_SOURCE_1="https://www.football-data.co.uk/mmz4281/$TG_FILE_SEASON/E0.csv"
+PHO_FILE_TARGET_1="$PHO_JOB_DATA/$TG_FILE_SEASON Premier_League_E0.csv"
+
+PHO_FILE_SOURCE_2="https://www.football-data.co.uk/mmz4281/$TG_FILE_SEASON/E1.csv"
+PHO_FILE_TARGET_2="$PHO_JOB_DATA/$TG_FILE_SEASON Championship_E1.csv"
+
+PHO_FILE_SOURCE_3="https://www.football-data.co.uk/mmz4281/$TG_FILE_SEASON/E2.csv"
+PHO_FILE_TARGET_3="$PHO_JOB_DATA/$TG_FILE_SEASON League_1_E2.csv"
+
+PHO_FILE_SOURCE_4="https://www.football-data.co.uk/mmz4281/$TG_FILE_SEASON/E3.csv"
+PHO_FILE_TARGET_4="$PHO_JOB_DATA/$TG_FILE_SEASON League_2_E3.csv"
+
+PHO_FILE_SOURCE_5="https://www.football-data.co.uk/mmz4281/$TG_FILE_SEASON/EC.csv"
+PHO_FILE_TARGET_5="$PHO_JOB_DATA/$TG_FILE_SEASON Conference_EC.csv"
+
+# Scotland Football Results
+PHO_FILE_SOURCE_6="https://www.football-data.co.uk/mmz4281/$TG_FILE_SEASON/SC0.csv"
+PHO_FILE_TARGET_6="$PHO_JOB_DATA/$TG_FILE_SEASON Premier_League_SC0.csv"
+
+PHO_FILE_SOURCE_7="https://www.football-data.co.uk/mmz4281/$TG_FILE_SEASON/SC1.csv"
+PHO_FILE_TARGET_7="$PHO_JOB_DATA/$TG_FILE_SEASON Division_1_SC1.csv"
+
+PHO_FILE_SOURCE_8="https://www.football-data.co.uk/mmz4281/$TG_FILE_SEASON/SC2.csv"
+PHO_FILE_TARGET_8="$PHO_JOB_DATA/$TG_FILE_SEASON Division_2_SC2.csv"
+
+PHO_FILE_SOURCE_9="https://www.football-data.co.uk/mmz4281/$TG_FILE_SEASON/SC3.csv"
+PHO_FILE_TARGET_9="$PHO_JOB_DATA/$TG_FILE_SEASON Division_3_SC3.csv"
+
+# Germany Football Results
+PHO_FILE_SOURCE_10="https://www.football-data.co.uk/mmz4281/$TG_FILE_SEASON/D1.csv"
+PHO_FILE_TARGET_10="$PHO_JOB_DATA/$TG_FILE_SEASON Bundesliga_1_D1.csv"
+
+PHO_FILE_SOURCE_11="https://www.football-data.co.uk/mmz4281/$TG_FILE_SEASON/D2.csv"
+PHO_FILE_TARGET_11="$PHO_JOB_DATA/$TG_FILE_SEASON Bundesliga_2_D2.csv"
+
+# Italy Football Results
+PHO_FILE_SOURCE_12="https://www.football-data.co.uk/mmz4281/$TG_FILE_SEASON/I1.csv"
+PHO_FILE_TARGET_12="$PHO_JOB_DATA/$TG_FILE_SEASON Serie_A_I1.csv"
+
+PHO_FILE_SOURCE_13="https://www.football-data.co.uk/mmz4281/$TG_FILE_SEASON/I2.csv"
+PHO_FILE_TARGET_13="$PHO_JOB_DATA/$TG_FILE_SEASON Serie_B_I2.csv"
+
+# Spain Football Results
+PHO_FILE_SOURCE_14="https://www.football-data.co.uk/mmz4281/$TG_FILE_SEASON/SP1.csv"
+PHO_FILE_TARGET_14="$PHO_JOB_DATA/$TG_FILE_SEASON La_Liga_Primera_Division_SP1.csv"
+
+PHO_FILE_SOURCE_15="https://www.football-data.co.uk/mmz4281/$TG_FILE_SEASON/SP2.csv"
+PHO_FILE_TARGET_15="$PHO_JOB_DATA/$TG_FILE_SEASON La_Liga_Segunda_Division_SP2.csv"
+
+# France Football Results 
+PHO_FILE_SOURCE_16="https://www.football-data.co.uk/mmz4281/$TG_FILE_SEASON/F1.csv"
+PHO_FILE_TARGET_16="$PHO_JOB_DATA/$TG_FILE_SEASON Le_Championnat_F1.csv"
+
+PHO_FILE_SOURCE_17="https://www.football-data.co.uk/mmz4281/$TG_FILE_SEASON/F2.csv"
+PHO_FILE_TARGET_17="$PHO_JOB_DATA/$TG_FILE_SEASON Division_2_F2.csv"
+
+# Netherlands Football Results
+PHO_FILE_SOURCE_18="https://www.football-data.co.uk/mmz4281/$TG_FILE_SEASON/N1.csv"
+PHO_FILE_TARGET_18="$PHO_JOB_DATA/$TG_FILE_SEASON Eredivisie_N1.csv"
+
+# Belgium Football Results
+PHO_FILE_SOURCE_19="https://www.football-data.co.uk/mmz4281/$TG_FILE_SEASON/B1.csv"
+PHO_FILE_TARGET_19="$PHO_JOB_DATA/$TG_FILE_SEASON Jupiler_League_B1.csv"
+
+# Portugal Football Results
+PHO_FILE_SOURCE_20="https://www.football-data.co.uk/mmz4281/$TG_FILE_SEASON/P1.csv"
+PHO_FILE_TARGET_20="$PHO_JOB_DATA/$TG_FILE_SEASON Liga_I_P1.csv"
+
+# Turkey Football Results
+PHO_FILE_SOURCE_21="https://www.football-data.co.uk/mmz4281/$TG_FILE_SEASON/T1.csv"
+PHO_FILE_TARGET_21="$PHO_JOB_DATA/$TG_FILE_SEASON Futbol_Ligi_1_T1.csv"
+
+# Greece Football Results
+PHO_FILE_SOURCE_22="https://www.football-data.co.uk/mmz4281/$TG_FILE_SEASON/G1.csv"
+PHO_FILE_TARGET_22="$PHO_JOB_DATA/$TG_FILE_SEASON Ethniki_Katigoria_G1.csv"

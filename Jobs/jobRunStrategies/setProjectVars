@@ -1,0 +1,25 @@
+#!/bin/bash
+#-----------------------------------------------------------
+#   Autor       : ucabrera
+#   Date        : 23/01/2020
+#   
+#   VAR_VARNAME     Local vars
+#   PHO_VARNAME     Pentaho vars
+#-----------------------------------------------------------
+
+TG_NOTIFY_FINISH_TO=
+TG_NOTIFY_FAILURE_TO="-317185794"
+TG_NOTIFY_SUCCESS_TO=
+
+# England Football Results
+PHO_STORED_NAME="sp_run_strategy"
+
+# Date Format: dd/mm/yyyy
+PHO_DATE_FROM=$(date +"%d/%m/%Y")
+PHO_DATE_TO=$(date --date="2 days" +"%d/%m/%Y")
+
+# Examples:
+# PHO_DATE_FROM=$(date --date="yesterday" +"%d/%m/%Y")
+# $(date --date="tomorrow" +"%d/%m/%Y")
+# $(date --date="1 days ago" +"%d/%m/%Y") # past
+# $(date --date="1 days" +"%d/%m/%Y") # future

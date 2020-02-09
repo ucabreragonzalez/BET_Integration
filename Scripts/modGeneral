@@ -1,0 +1,163 @@
+#!/bin/bash
+#-----------------------------------------------------------
+#   Autor       : ucabrera
+#   Date        : 18/01/2020
+#-----------------------------------------------------------
+source ./varGeneral
+
+#-----------------------------------------------------------
+#   Function    : FileExist
+#   Date        : 02/08/2015
+#   Objetive    : Validate whether a file exists.
+#   Parameters  : strFile       : Path of the file to Validate
+#
+#   Exaple      : variable=$(FileExist "path/to/the/file")
+#-----------------------------------------------------------
+FileExist()
+{
+    local strFile="$1"
+
+    if [ -f "$strFile" ]; then
+        echo true
+    else
+        echo false
+    fi
+}
+
+#-----------------------------------------------------------
+#   Function    : FileExistDelete
+#   Date        : 02/08/2015
+#   Objetive    : If the file exists delete it.
+#   Parameters  : strFile       : Path of the file to Validate
+#
+#   Exaple      : FileExistDelete "path/to/the/file"
+#-----------------------------------------------------------
+FileExistDelete()
+{
+    local strFile="$1"
+
+    if [ $(FileExist "$strFile") = true ]; then
+        rm "$strFile"
+    fi
+}
+
+#-----------------------------------------------------------
+#   Function    : FolderExist
+#   Date        : 02/08/2015
+#   Objetive    : Validate whether a folder exists.
+#   Parameters  : strFolder      : Path of the file to Validate
+#
+#   Exaple      : variable=$(FolderExist "path/to/the/file")
+#-----------------------------------------------------------
+FolderExist() {
+    local strFolder="$1"
+    
+    if [ -d "$strFolder" ]; then
+        echo true
+    else
+        echo false
+    fi
+}
+
+#-----------------------------------------------------------
+#   Function    : FolderExistDelete
+#   Date        : 02/08/2015
+#   Objetive    : If the folder exists delete it.
+#   Parameters  : strFolder      : Path of the folder.
+#
+#   Exaple      : FolderExistDelete "path/to/the/file"
+#-----------------------------------------------------------
+FolderExistDelete() {
+    local strFolder="$1"
+
+    if [ $(FolderExist "$strFolder") = true ]; then
+        rm -rf "$strFolder"
+    fi
+}
+
+#-----------------------------------------------------------
+#   Function    : FolderExistDelete
+#   Date        : 02/08/2015
+#   Objetive    : Create a folder within all the path.
+#   Parameters  : strFolder      : Path of the folder.
+#
+#   Exaple      : FolderCreate "path/to/the/folder"
+#-----------------------------------------------------------
+FolderCreate() {
+    local strFolder="$1"
+
+    if [ $(FolderExist "$strFolder") = false ]; then
+        mkdir -p "$strFolder"
+    fi
+}
+
+#-----------------------------------------------------------
+#   Function    : AddIntoFile
+#   Date        : 02/08/2015
+#   Objetive    : Append text at the end of a file and create
+#                 it if does not exists.
+#   Parameters  : strFolder      : Path to the file.
+#                 strText        : Text to being inserted.
+#
+#   Exaple      : AddIntoFile "path/to/the/file" "Text to insert"
+#-----------------------------------------------------------
+AddIntoFile()
+{
+    local strFile="$1"
+    local strText="$2"
+
+    echo "$strText" >> $strFile
+}
+
+#-----------------------------------------------------------
+#   Function    : ReplaceString
+#   Date        : 02/08/2015
+#   Objetive    : If the text is null or nothing then return a default value
+#   Parameters  : OriginalTxt       : Original text
+#                 FindTxt           : Text to search into the original
+#                 ReplaceWithTxt    : Text to being inserted instead.
+#
+#   Exaple      : ReplaceString "OriginalTxt" "FindTxt" "ReplaceWithTxt"
+#-----------------------------------------------------------
+ReplaceString()
+{
+    local strOriginalTxt="$1"
+    local strFindTxt="$2"
+    local strReplaceWithTxt="$3"
+
+    echo "${strOriginalTxt//$strFindTxt/$strReplaceWithTxt}"
+}
+
+#-----------------------------------------------------------
+#   Function    : SendTelegramMessage
+#-----------------------------------------------------------
+SendTelegramMessage()
+{
+    local strChatId="$1"
+    local strMessageText="$2"
+    local strAttachmentPath="$3"
+
+    if [ "$strAttachmentPath" == "" ]; then
+        curl -s -X POST "$VAR_TELEGRAM_MESSAGE_URL" -F chat_id="$strChatId" -F text="$strMessageText" > /dev/null
+    else
+        curl -s -X POST "$VAR_TELEGRAM_ATTACHMENT_URL" -F chat_id="$strChatId" -F caption="$strMessageText" -F document=@"$strAttachmentPath" > /dev/null
+    fi
+}
+
+#-----------------------------------------------------------
+#   Function    : CopyFileColumns
+#-----------------------------------------------------------
+CopyFileColumns()
+{
+    local strFileSource="$1"
+    local strFileTarget="$2"
+    local strColumns="$3"
+
+    FileExistDelete "$strFileTarget"
+    AddIntoFile "$strFileTarget" ""
+
+    csvcut -c "$strColumns" "$strFileSource" > "$strFileTarget"
+
+    echo "NewColumn,NEWCOLUMN2" | csvjoin "$strFileTarget" -> "$strFileTarget.new"
+
+}

@@ -1,0 +1,840 @@
+#!/bin/bash
+#-----------------------------------------------------------
+#   Definicion de funciones generales
+#
+#   Autor       : ucabrera
+#   Date        : 02/08/2015
+#-----------------------------------------------------------
+source varGeneral
+#-----------------------------------------------------------
+
+#set -e
+
+errSection()
+{
+    local iErrorCode="$?"
+    if [ $VAR_AVOID_ERROR = 0 ]; then
+        if [ "$VARPROCESS" = "" ]; then
+            ErrorExit "$iErrorCode"
+        else
+            ErrorExit "$iErrorCode" "$VARPROCESS"
+        fi
+    fi
+}
+
+#trap 'if [ $? == 2 ]; then echo "Failed"; exit 2; fi' ERR
+trap 'errSection' ERR
+
+#-----------------------------------------------------------
+#   Function    : FileExist
+#   Date        : 02/08/2015
+#   Objetive    : Validate whether a file exists.
+#   Parameters  : strFile       : Path of the file to Validate
+#
+#   Exaple      : variable=$(FileExist "path/to/the/file")
+#-----------------------------------------------------------
+FileExist()
+{
+	local strFile="$1"
+
+	if [ -f "$strFile" ]; then
+        echo true
+    else
+        echo false
+    fi
+}
+
+#-----------------------------------------------------------
+#   Function    : FileExistDelete
+#   Date        : 02/08/2015
+#   Objetive    : If the file exists delete it.
+#   Parameters  : strFile       : Path of the file to Validate
+#
+#   Exaple      : FileExistDelete "path/to/the/file"
+#-----------------------------------------------------------
+FileExistDelete()
+{
+    local strFile="$1"
+
+    if [ $(FileExist "$strFile") = true ]; then
+        rm "$strFile"
+    fi
+}
+FileExistDelete_sudo()
+{
+    local strFile="$1"
+
+    if [ $(FileExist "$strFile") = true ]; then
+        sudo rm "$strFile"
+    fi
+}
+
+#-----------------------------------------------------------
+#   Function    : FolderExist
+#   Date        : 02/08/2015
+#   Objetive    : Validate whether a folder exists.
+#   Parameters  : strFolder      : Path of the file to Validate
+#
+#   Exaple      : variable=$(FolderExist "path/to/the/file")
+#-----------------------------------------------------------
+FolderExist()
+{
+    local strFolder="$1"
+    
+    if [ -d "$strFolder" ]; then
+        echo true
+    else
+        echo false
+    fi
+}
+
+#-----------------------------------------------------------
+#   Function    : FolderExistDelete
+#   Date        : 02/08/2015
+#   Objetive    : If the folder exists delete it.
+#   Parameters  : strFolder      : Path of the folder.
+#
+#   Exaple      : FolderExistDelete "path/to/the/file"
+#-----------------------------------------------------------
+FolderExistDelete()
+{
+    local strFolder="$1"
+
+    if [ $(FolderExist "$strFolder") = true ]; then
+        rm -rf "$strFolder"
+    fi
+}
+FolderExistDelete_sudo()
+{
+    local strFolder="$1"
+
+    if [ $(FolderExist "$strFolder") = true ]; then
+        sudo rm -rf "$strFolder"
+    fi
+}
+
+#-----------------------------------------------------------
+#   Function    : FolderExistDelete
+#   Date        : 02/08/2015
+#   Objetive    : Create a folder within all the path.
+#   Parameters  : strFolder      : Path of the folder.
+#
+#   Exaple      : FolderCreate "path/to/the/folder"
+#-----------------------------------------------------------
+FolderCreate()
+{
+    local strFolder="$1"
+
+    if [ $(FolderExist "$strFolder") = false ]; then
+        mkdir -p "$strFolder"
+    fi
+}
+
+#-----------------------------------------------------------
+#   Function    : AddIntoFile
+#   Date        : 02/08/2015
+#   Objetive    : Append text at the end of a file and create
+#                 it if does not exists.
+#   Parameters  : strFolder      : Path to the file.
+#                 strText        : Text to being inserted.
+#
+#   Exaple      : AddIntoFile "path/to/the/file" "Text to insert"
+#-----------------------------------------------------------
+AddIntoFile()
+{
+    local strFile="$1"
+    local strText="$2"
+
+    echo "$strText" >> $strFile
+}
+
+#-----------------------------------------------------------
+#   Function    : WriteMessageLog
+#   Date        : 02/08/2015
+#   Objetive    : Append text at the end of a log that we have configurated.
+#   Parameters  : strText       : Text to being inserted.
+#                 bolShowMsg (optional) : If "true" the msg is show at screen as well.
+#
+#   Exaple      : WriteMessageLog "Text to insert" false
+#-----------------------------------------------------------
+WriteMessageLog()
+{
+    local strFile="$VAR_PATH_LOGS/$VAR_LOG_FILE"
+    local strText="$1"
+    local bolShowMsg="${2:-"false"}"
+    local strUser=$USER
+    local datDate=$(date +"$VARFORMATDATEMINSEG")
+    local strMessage="$datDate*$PROGNAME*$strUser*$strText"
+
+    FolderCreate "$VAR_PATH_LOGS"
+
+    #Si no existe Log, crear con cabeceras
+    if [ $(FileExist "$strFile") = false ]; then
+        AddIntoFile "$strFile" "DATE*PROCESS*USER*MESSAGE"
+    fi
+
+    AddIntoFile "$strFile" "$strMessage"
+
+    if [ $bolShowMsg = true ]; then
+        echo "$strText"
+    fi
+}
+
+#-----------------------------------------------------------
+#   Function    : ErrorExit
+#   Date        : 02/08/2015
+#   Objetive    : Add a msg into the log and finished the program.
+#   Parameters  : strErrorMessage       : Text to being inserted as message.
+#
+#   Exaple      : ErrorExit "Text to insert" false
+#-----------------------------------------------------------
+ErrorExit()
+{
+    local strErrorMessage="[ERROR $1 at LINENO:$LINENO] ${2:-"Unknown Error"}"
+    WriteMessageLog "$strErrorMessage"
+    WriteMessageLog "Terminando Ejecución con Error..." true
+    echo "Para mayor detalle consulte el archivo: $VAR_PATH_LOGS/$VAR_LOG_FILE"
+    exit -666
+    #echo "${PROGNAME}: ${1:-"Unknown Error"}" 1>&2
+    #"$LINENO: An error has occurred."
+}
+
+#-----------------------------------------------------------
+#   Function    : VerifyIntalled
+#   Date        : 02/08/2015
+#   Objetive    : Validate if an Application has been installed.
+#   Parameters  : strApp        : Name of Application to validate.
+#
+#   Exaple      : VerifyIntalled "Name of App"
+#-----------------------------------------------------------
+VerifyIntalled()
+{
+    local strApp="$1"
+    WriteMessageLog "Checking if app is installed: '$strApp'"
+    rpm -qa | grep "$strApp" > /dev/null
+    if [ $? != 0 ]; then
+        WriteMessageLog "Installed: 'false'"
+        echo false
+    else
+        WriteMessageLog "Installed: 'true'"
+        echo true
+    fi
+}
+
+#-----------------------------------------------------------
+#   Function    : InstallApp
+#   Date        : 02/08/2015
+#   Objetive    : Install an Application
+#   Parameters  : Name or names of Application to install.
+#
+#   Exaple      : InstallApp -y "Name of App" "app2" "app3"
+#-----------------------------------------------------------
+InstallApp()
+{
+    WriteMessageLog "Executing... InstallApp $*"
+    sudo dnf install $*
+}
+
+#-----------------------------------------------------------
+#   Function    : RemoveApp
+#   Date        : 02/08/2015
+#   Objetive    : Uninstall an Application
+#   Parameters  : Name or names of Application to Uninstall.
+#
+#   Exaple      : RemoveApp -y "Name of App" "app2" "app3"
+#-----------------------------------------------------------
+RemoveApp()
+{
+    WriteMessageLog "Executing... RemoveApp $*"
+    sudo dnf remove $*
+}
+
+#-----------------------------------------------------------
+#   Function    : Download
+#   Date        : 02/08/2015
+#   Objetive    : Download from a link/url given.
+#   Parameters  : strUr                 : Link of the file to Download
+#                 strPathToSaveIt (opt) : Path where to save the file or empty to put into the configured path.
+#
+#   Exaple      : Download "Url" "PathToSaveIt"
+#-----------------------------------------------------------
+Download()
+{
+
+    local strUrl="$1"
+    local strPathToSaveIt="${2:-$VAR_PATH_DOWNLOADS}"
+
+    WriteMessageLog "-----------------------------------------------------------" true
+    WriteMessageLog "Intentando Descarga con 'axel'.." true
+    WriteMessageLog "-----------------------------------------------------------" true
+    echo""
+    if [ $(VerifyIntalled axel) = false ];then
+        WriteMessageLog "'axel' no se encuentra instalado. Instalando..." true
+        InstallApp axel -y
+    fi
+
+    if [ $(FolderExist "$strPathToSaveIt") = false ]; then
+        FolderCreate "$strPathToSaveIt"
+    fi
+
+    WriteMessageLog "Executing... axel -o '$strPathToSaveIt' -a '$strUr'"
+    axel -o "$strPathToSaveIt" -a "$strUrl"
+
+    #En caso de que falle descarga con axel
+    if [ $? -eq 1 ];then
+
+        WriteMessageLog "-----------------------------------------------------------" true
+        WriteMessageLog "Intentando Descarga con 'wget'.." true
+        WriteMessageLog "-----------------------------------------------------------" true
+        echo""
+        if [ $(VerifyIntalled axel) = false ];then
+            WriteMessageLog "'wget' no se encuentra instalado. Instalando..." true
+            InstallApp wget -y
+        fi
+
+        WriteMessageLog "Executing... wget '$strUrl' -P '$strPathToSaveIt'"
+        wget "$strUrl" -P "$strPathToSaveIt"
+    fi
+}
+
+#-----------------------------------------------------------
+#   Function    : SplitString
+#   Date        : 02/08/2015
+#   Objetive    : To update the system..
+#   Parameters  : String        : String to being separated
+#                 Separator     : Character or string that saparates the Original String
+#                 VariableToReturn : Name of a variable to store the results
+#                 VariableCount : Name of a variable to store the number of results
+#
+#   Exaple      : SplitString "String" "Separator" "VariableToReturn" "(opt) VariableCount"
+#-----------------------------------------------------------
+SplitString()
+{
+    local strString="$1"
+    local strSeparator="$2"
+    local strVarName="$3"
+    local strVarCount="$4"
+    local OIFS=$IFS
+
+    local arrayResult
+
+    IFS=$strSeparator
+    arrayResult=(${strString})
+
+    eval $strVarName='(${arrayResult[*]})'
+
+    if [ "$strVarCount" != "" ]; then
+        eval $strVarCount='${#arrayResult[*]}'
+    fi
+
+    IFS=$OIFS
+}
+
+#-----------------------------------------------------------
+#   Function    : TurnScreenOff
+#   Date        : 02/08/2015
+#   Objetive    : To turn off the screen
+#   Parameters  : 
+#
+#   Exaple      : TurnScreenOff
+#-----------------------------------------------------------
+TurnScreenOff()
+{
+    #sleep 1; xset dpms force off
+    xset dpms force off
+}
+
+#-----------------------------------------------------------
+#   Function    : Uncompress
+#   Date        : 02/08/2015
+#   Objetive    : Uncompressing a file depends of the extension.
+#   Parameters  : strFileToUncompress   : File to being uncompressed
+#                 strFolderToExtract    : Folder where to safe the uncompressed files
+#
+#   Exaple      : Uncompress "Path File" "opt strFolderToExtract"
+#-----------------------------------------------------------
+Uncompress() {
+    if [ -f $1 ] ; then
+
+        local strFolderToExtract="${2:-"$(pwd)"}"
+        if [ $(FolderExist "$strFolderToExtract") = false ]; then
+            FolderCreate "$strFolderToExtract"
+        fi
+        
+        case $1 in
+            *.tar.bz2)
+                tar xjf $1 -C "$strFolderToExtract"
+                ;;
+            *.tar.xz)
+                tar xJf $1 -C "$strFolderToExtract"
+                ;;
+            *.tar.gz)
+                tar xzf $1 -C "$strFolderToExtract"
+                ;;
+            *.bz2)
+                bunzip2 $1
+                ;;
+            *.rar)
+                rar x $1
+                ;;
+            *.gz)
+                gunzip $1
+                ;;
+            *.tar)
+                tar xf $1 -C "$strFolderToExtract"
+                ;;
+            *.tbz2)
+                tar xjf $1 -C "$strFolderToExtract"
+                ;;
+            *.tgz)
+                tar xzf $1 -C "$strFolderToExtract"
+                ;;
+            *.zip)
+                unzip $1
+                ;;
+            *.Z)
+                uncompress $1
+                ;;
+            *.7z)
+                7z x $1 -o"$strFolderToExtract"
+                ;;
+            *) WriteMessageLog "'$1' imposible extraer vía extract" true ;;
+        esac
+    else
+        WriteMessageLog "'$1' no es un archivo válido" true
+    fi
+}
+
+#-----------------------------------------------------------
+#   Function    : Nvl
+#   Date        : 02/08/2015
+#   Objetive    : If the text is null or nothing then return a default value
+#   Parameters  : OriginalTxt       : Original text
+#                 DefaultTxt        : Default text
+#
+#   Exaple      : Nvl "OriginalTxt" "DefaultTxt"
+#-----------------------------------------------------------
+Nvl()
+{
+    local strOriginalTxt="$1"
+    local strDefaultTxt="$2"
+
+    echo "${strOriginalTxt:-"$strDefaultTxt"}"
+}
+
+#-----------------------------------------------------------
+#   Function    : ReplaceString
+#   Date        : 02/08/2015
+#   Objetive    : If the text is null or nothing then return a default value
+#   Parameters  : OriginalTxt       : Original text
+#                 FindTxt           : Text to search into the original
+#                 ReplaceWithTxt    : Text to being inserted instead.
+#
+#   Exaple      : ReplaceString "OriginalTxt" "FindTxt" "ReplaceWithTxt"
+#-----------------------------------------------------------
+ReplaceString()
+{
+    local strOriginalTxt="$1"
+    local strFindTxt="$2"
+    local strReplaceWithTxt="$3"
+
+    echo "${strOriginalTxt//$strFindTxt/$strReplaceWithTxt}"
+}
+
+#-----------------------------------------------------------
+#   Function    : GetFileExtension
+#   Date        : 02/08/2015
+#   Objetive    : Return the extension of a File/Path Name
+#   Parameters  : FileName          : Name or Path to the File
+#
+#   Exaple      : GetFileExtension "Name/Path/of/File.extension"
+#-----------------------------------------------------------
+GetFileExtension()
+{
+    local strFileName="$1"
+    if [ "$strFileName" != "" ];then
+        SplitString $strFileName "." tmpArray intCount
+
+        if [ $intCount \> 1 ];then
+            intCount=$intCount-1
+            echo "${tmpArray[$intCount]}"
+        else
+            echo ""
+        fi
+    else
+        echo ""
+    fi
+}
+
+#-----------------------------------------------------------
+#   Function    : GetFileName
+#   Date        : 02/08/2015
+#   Objetive    : Return the Name of a File/Path
+#   Parameters  : FileName          : Name or Path to the File
+#
+#   Exaple      : GetFileName "Name/Path/of/FileName.extension"
+#-----------------------------------------------------------
+GetFileName()
+{
+    local strFileName="$1"
+    if [ "$strFileName" != "" ];then
+        echo "$(basename "$strFileName")"
+    else
+        echo ""
+    fi
+}
+
+#-----------------------------------------------------------
+#   Function    : Compress
+#   Date        : 02/08/2015
+#   Objetive    : Compress a File or Folder at the extension desired. Standar extension will be 7z.
+#   Parameters  : strPathFileToCompress     : File to being Compressed
+#                 strPathToSave             : Folder where to save the Compressed files within the extension.
+#
+#   Exaple      : Compress "Path File/Folder" "Path to store/File Name.zip"
+#-----------------------------------------------------------
+Compress() {
+    local strPathFileToCompress=$1
+    local strPathToSave="${2:-7z}" # 7z by Default
+
+    if [[ $(FileExist $strPathFileToCompress) = true || $(FolderExist $strPathFileToCompress) = true ]]; then #|| $(FolderExist $strPathFileToCompress) = true
+
+        if [[ "$strPathToSave" = "$(GetFileExtension $strPathToSave)" || "$(GetFileExtension $strPathToSave)" = "" ]];then
+            strPathToSave="$(basename $strPathFileToCompress).$strPathToSave"
+        fi
+
+        case $strPathToSave in
+            *.tar.bz2)
+                #tar xjf $1
+                ;;
+            *.tar.gz)
+                #tar xzf $1
+                ;;
+            *.bz2)
+                #bunzip2 $1
+                ;;
+            *.rar)
+                #rar x $1
+                ;;
+            *.gz)
+                #gunzip $1
+                ;;
+            *.tar)
+                #tar xf $1
+                ;;
+            *.tbz2)
+                #tar xjf $1
+                ;;
+            *.tgz)
+                #tar xzf $1
+                ;;
+            *.zip)
+                #unzip $1
+                ;;
+            *.Z)
+                #uncompress $1
+                ;;
+            *.7z)
+                7z a $strPathToSave $strPathFileToCompress
+                ;;
+            *)
+                WriteMessageLog "'$strPathToSave' imposible comprimir vía Compress"
+                return 99
+                ;;
+        esac
+    else
+        WriteMessageLog "'$strPathFileToCompress' no es un archivo o carpeta válido(a)"
+        return 99
+    fi
+}
+
+#-----------------------------------------------------------
+#   Function    : RTrim
+#   Date        : 02/08/2015
+#   Objetive    : Return the original text without the spaces at the rigth.
+#   Parameters  : strText           : Original text
+#
+#   Exaple      : RTrim "   Text"
+#-----------------------------------------------------------
+RTrim()
+{
+    local strText="$1"
+    if [ "$strText" != "" ];then
+        echo "${strText}" | sed -e "s/\ *$//g" -e "s/\t*$//g"
+    else
+        echo ""
+    fi
+}
+
+#-----------------------------------------------------------
+#   Function    : LTrim
+#   Date        : 02/08/2015
+#   Objetive    : Return the original text without the spaces at the left.
+#   Parameters  : strText           : Original text
+#
+#   Exaple      : LTrim "Text   "
+#-----------------------------------------------------------
+LTrim()
+{
+    local strText="$1"
+    if [ "$strText" != "" ];then
+        echo "${strText}" | sed -e "s/^\ *//g" -e "s/^\t*//g"
+    else
+        echo ""
+    fi
+}
+
+#-----------------------------------------------------------
+#   Function    : Trim
+#   Date        : 02/08/2015
+#   Objetive    : Return the original text without the spaces at the rigth and left.
+#   Parameters  : strText           : Original text
+#
+#   Exaple      : Trim "   Text   "
+#-----------------------------------------------------------
+Trim()
+{
+    local strText="$1"
+    if [ "$strText" != "" ];then
+        echo "$(RTrim "$(LTrim "$strText")" )"
+    else
+        echo ""
+    fi
+}
+
+#-----------------------------------------------------------
+#   Function    : Len
+#   Date        : 02/08/2015
+#   Objetive    : Return the number of characters into the original text.
+#   Parameters  : strText           : Original text
+#
+#   Exaple      : Len "Text"
+#-----------------------------------------------------------
+Len()
+{
+    local strText="$1"
+    if [ "$strText" != "" ];then
+        echo ${#strText}
+    else
+        echo 0
+    fi
+}
+
+#-----------------------------------------------------------
+#   Function    : Right
+#   Date        : 02/08/2015
+#   Objetive    : Return all the characters at the rigth until the positions number.
+#   Parameters  : strText           : Original text
+#                 intPositions      : Positions to return.
+#
+#   Exaple      : Right "Text" Positions
+#-----------------------------------------------------------
+Right()
+{
+    local strText="$1"
+    local intPositions=$2
+    if [ "$strText" != "" ];then
+        echo ${strText:(-$intPositions)}
+    else
+        echo ""
+    fi
+}
+
+#-----------------------------------------------------------
+#   Function    : Left
+#   Date        : 02/08/2015
+#   Objetive    : Return all the characters at the left until the positions number.
+#   Parameters  : strText           : Original text
+#                 intPositions      : Positions to return.
+#
+#   Exaple      : Left "Text" Positions
+#-----------------------------------------------------------
+Left()
+{
+    local strText="$1"
+    local intPositions=$2
+    if [ "$strText" != "" ];then
+        echo ${strText:0:$intPositions}
+    else
+        echo ""
+    fi
+}
+
+#-----------------------------------------------------------
+#   Function    : Substring
+#   Date        : 19/09/2016
+#   Objetive    : starting with 1.
+#   Parameters  : strText            : Original text
+#                 intSince           : since what position.
+#                 intPositions       : Positions to return
+#
+#   Exaple      : Substring "Text" Since Positions
+#-----------------------------------------------------------
+Substring()
+{
+    local strText="$1"
+    local intSince=$2
+    local intPositions=$3
+
+    if [ "$strText" != "" ];then
+        if [ $intSince == 0 ];then
+            intSince=1
+        fi
+        echo ${strText:$intSince-1:$intPositions}
+    else
+        echo ""
+    fi
+}
+
+#FileRows("Path/File")
+FileRows()
+{
+    local strFilePath="$1"
+    if [ $(FileExist $strFilePath) = true ];then
+        echo $(grep -c "" $strFilePath)
+        #echo $(cat $strFilePath | wc -l)
+    else
+        echo 0
+    fi
+}
+
+#GetFileRow("Path/File", Row)
+GetFileRow()
+{
+    local strFilePath="$1"
+    local strRowNum=$2
+    if [ $(FileExist $strFilePath) = true ];then
+        echo $(head -$strRowNum $strFilePath | tail -1)
+    else
+        echo ""
+    fi
+}
+
+#-----------------------------------------------------------
+#   Function    : Upper
+#   Date        : 02/08/2015
+#   Objetive    : Return the original text in upper case.
+#   Parameters  : strOriginalTxt           : Original text
+#
+#   Exaple      : Upper "OriginalTxt"
+#----------------------------------------------------------
+Upper()
+{
+    local strOriginalTxt=$1
+
+    echo $strOriginalTxt | sed 's/.*/\U&/'
+    #TEXTO="Hola Mundo"
+    #echo "${TEXTO^^}"
+}
+
+#-----------------------------------------------------------
+#   Function    : Lower
+#   Date        : 02/08/2015
+#   Objetive    : Return the original text in Lower case.
+#   Parameters  : strOriginalTxt           : Original text
+#
+#   Exaple      : Lower "OriginalTxt"
+#----------------------------------------------------------
+Lower()
+{
+    local strOriginalTxt=$1
+
+    echo $strOriginalTxt | sed 's/.*/\L&/'
+    #TEXTO="Hola Mundo"
+    #echo "${TEXTO,,}"
+}
+
+#-----------------------------------------------------------
+#   Function    : Pause
+#   Date        : 16/01/2016
+#   Objetive    : Stop the execution of a script until the user press a key or for a while if a time is specified.
+#   Parameters  : itime            : Periode of time in seconds to wait before continue
+#
+#   Exaple      : Pause 5
+#               : Pause
+#----------------------------------------------------------
+Pause()
+{
+    if [ "$#" == "0" ]; then
+        read -n1 -r -p $'Press any key to continue...\n' key
+    else
+        local itime=$1
+        while true; do
+            echo -ne "Time before continue... $itime \r"
+            sleep 1
+            itime=$[$itime - 1]
+            if [ $itime == -1 ]; then echo "" && break ; fi
+        done
+    fi
+}
+
+#-----------------------------------------------------------
+#   Function    : IndexString
+#   Date        : 19/09/2016
+#   Objetive    : Find the position of the first occurrence of one string within another string.
+#                 Returns 0 if couldn't find it
+#   Parameters  : strText            : Original text
+#                 strSearch          : String being searched.
+#
+#   Exaple      : IndexString "Text" "strSearch"
+#   http://stackoverflow.com/questions/21688553/bash-expr-index-command
+#-----------------------------------------------------------
+IndexString()
+{
+    local strText="$1"
+    local strSearch="$2"
+    local intOriginalLen=$(Len "$strText")
+    local strPrefix=${strText%%$strSearch*}
+    local intFoundIndex=$(Len "$strPrefix")
+
+    if [[ "$strText" != "" && $intOriginalLen != $intFoundIndex ]];then
+        echo $(( intFoundIndex + 1 ))
+    else
+        echo 0
+    fi
+}
+
+#-----------------------------------------------------------
+#   Function    : SubstringExp
+#   Date        : 20/09/2016
+#   Objetive    : Extract the first occurrence that match with the expresion. Empty if doesn't
+#   Parameters  : strText            : Original text
+#                 strExp             : since what position.
+#
+#   Exaple      : SubstringExp "Mr.Robot.S02E11.720p.HDTV.x264-KILLERS.mkv" "[Ss][0-9][0-9][Ee][0-9][0-9]"
+#               to return: S02E11
+#-----------------------------------------------------------
+SubstringExp()
+{
+    local strText="$1"
+    local strExp="$2"
+    local strEnd="${strText#*$strExp}"
+    local strBegin="${strText%$strExp*}"
+    local strMatch="${strText#*$strBegin}"
+    strMatch="${strMatch%$strEnd*}"
+
+    if [ "$strText" != "" ];then
+        echo $strMatch
+    else
+        echo ""
+    fi
+}
+
+#-----------------------------------------------------------
+#   Function    : CapStr
+#   Date        : 20/09/2016
+#   Objetive    : Extract the first occurrence that match with the expresion. Empty if doesn't
+#   Parameters  : strText            : Original text
+#
+#   Exaple      : CapStr "siNce what positIon" = "Since What Position"
+#-----------------------------------------------------------
+CapStr()
+{
+    local strText="$1"
+
+    if [ "$strText" != "" ];then
+        echo $(for word in $(Lower "$strText"); do printf '%s ' "${word^}"; done; echo)
+    else
+        echo ""
+    fi
+}

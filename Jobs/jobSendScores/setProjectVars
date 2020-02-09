@@ -1,0 +1,22 @@
+#!/bin/bash
+#-----------------------------------------------------------
+#   Autor       : ucabrera
+#   Date        : 23/01/2020
+#   
+#   VAR_VARNAME     Local vars
+#   PHO_VARNAME     Pentaho vars
+#-----------------------------------------------------------
+
+TG_NOTIFY_FINISH_TO=
+TG_NOTIFY_FAILURE_TO="-317185794"
+TG_NOTIFY_SUCCESS_TO=
+
+# 
+PHO_EXPORT_FILE_NM="$PHO_JOB_DATA/Strategies_$(date +"%d%m%Y%H%M").csv"
+
+# Date Format: dd/mm/yyyy
+PHO_DATE_FROM=$(date +"%d/%m/%Y")
+PHO_DATE_TO=$(date --date="2 days" +"%d/%m/%Y")
+
+PHO_SEND_FILE_TO="-317185794"
+PHO_SEND_MESSAGE="Matches for T to T+2 🤑"

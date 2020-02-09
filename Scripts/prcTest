@@ -1,0 +1,16 @@
+#!/bin/bash
+
+#-----------------------------------------------------------
+#   Autor       : ucabrera
+#   Date        : 18/01/2020
+#-----------------------------------------------------------
+
+source ./modGeneral
+
+VAR_SOURCE="/home/ucabrera/Downloads/1819 Premier_League_E0.csv"
+VAR_TARGET="/home/ucabrera/Downloads/your-csv.csv"
+VAR_COLS="Div,Date,HomeTeam,AwayTeam,Referee"
+
+CopyFileColumns "$VAR_SOURCE" "$VAR_TARGET" "$VAR_COLS"
+
+# https://github.com/wireservice/csvkit/issues/655

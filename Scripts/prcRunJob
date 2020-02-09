@@ -1,0 +1,41 @@
+#!/bin/bash
+
+VAR_BASE_DIR=$(dirname "$0")
+cd "$VAR_BASE_DIR"
+
+#-----------------------------------------------------------
+#   Autor       : ucabrera
+#   Date        : 18/01/2020
+#-----------------------------------------------------------
+
+source ./modGeneral
+
+PHO_JOB_NM=$(ReplaceString "$1" "job" "")
+PHO_JOB_PATH="$PHO_JOBS_PATH/$1/$1.kjb"
+VAR_JOB_VARS="$PHO_JOBS_PATH/$1/setProjectVars"
+PHO_JOB_DATA="$VAR_INTEGRATION_DATA_PATH/$1"
+
+VAR_MOD_RUN_JOB="$PHO_MODS_PATH/modRunJob/modRunJob.kjb"
+VAR_LOG_PATH="$PHO_JOB_DATA/Logs"
+
+FolderCreate "$VAR_LOG_PATH"
+
+source "$VAR_JOB_VARS"
+export ${!PHO_*}
+export ${!PENTAHO_DI_JAVA_*}
+
+$VAR_PENTAHO_PATH/kitchen.sh -file "$VAR_MOD_RUN_JOB" -level $VAR_PENTAHO_ERROR_LVL -logfile "$VAR_LOG_PATH/$(date +"$VAR_FORMAT_DATE_YEARMONTH").log"
+
+OUT_EXIT_STATUS=$?
+
+if [ "$TG_NOTIFY_FINISH_TO" != "" ]; then
+    SendTelegramMessage "$TG_NOTIFY_FINISH_TO" "😜 $(ReplaceString "$1" "job" "") finished [$VAR_ENVIRONMENT]"
+fi
+
+if [[ "$TG_NOTIFY_FAILURE_TO" != "" && "$OUT_EXIT_STATUS" != "0" ]]; then
+    SendTelegramMessage "$TG_NOTIFY_FAILURE_TO" "😱 $(ReplaceString "$1" "job" "") fail [$VAR_ENVIRONMENT]"
+fi
+
+if [[ "$TG_NOTIFY_SUCCESS_TO" != "" && "$OUT_EXIT_STATUS" == "0" ]]; then
+    SendTelegramMessage "$TG_NOTIFY_SUCCESS_TO" "😎 $(ReplaceString "$1" "job" "") succeeded [$VAR_ENVIRONMENT]"
+fi

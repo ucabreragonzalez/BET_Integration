@@ -1,0 +1,12 @@
+#!/bin/bash
+#-----------------------------------------------------------
+#   Autor       : ucabrera
+#   Date        : 18/01/2020
+#   
+#   VAR_VARNAME     Local vars
+#   PHO_VARNAME     Pentaho vars
+#-----------------------------------------------------------
+
+PHO_CHAT_ID="-360850798"
+PHO_MESSAGE_TEXT="Test 1"
+# PHO_ATTACHMENT_PATH="/home/ucabrera/Downloads/SS.png"
