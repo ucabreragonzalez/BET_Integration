@@ -110,6 +110,24 @@ AddIntoFile()
 }
 
 #-----------------------------------------------------------
+#   Function    : GetFileName
+#   Date        : 02/08/2015
+#   Objetive    : Return the Name of a File/Path
+#   Parameters  : FileName          : Name or Path to the File
+#
+#   Exaple      : GetFileName "Name/Path/of/FileName.extension"
+#-----------------------------------------------------------
+GetFileName()
+{
+    local strFileName="$1"
+    if [ "$strFileName" != "" ];then
+        echo "$(basename "$strFileName")"
+    else
+        echo ""
+    fi
+}
+
+#-----------------------------------------------------------
 #   Function    : ReplaceString
 #   Date        : 02/08/2015
 #   Objetive    : If the text is null or nothing then return a default value
@@ -126,6 +144,23 @@ ReplaceString()
     local strReplaceWithTxt="$3"
 
     echo "${strOriginalTxt//$strFindTxt/$strReplaceWithTxt}"
+}
+
+#-----------------------------------------------------------
+#   Function    : JoinArray
+#   JoinArray "," "${varArray[@]}"
+#-----------------------------------------------------------
+JoinArray()
+{
+    local strSeparator="$1"
+    shift
+    local strArray=("$@")
+    local OIFS=$IFS
+
+    IFS="$strSeparator"
+    echo "${strArray[*]}"
+
+    IFS=$OIFS
 }
 
 #-----------------------------------------------------------
@@ -147,17 +182,57 @@ SendTelegramMessage()
 #-----------------------------------------------------------
 #   Function    : CopyFileColumns
 #-----------------------------------------------------------
+ColumnExists()
+{
+    local strFile="$1"
+    local strColumn="$2"
+
+    local iCount=$(csvcut -n "$strFile" | grep -c -w "$strColumn")
+
+    if [ $iCount -eq 0 ]; then
+        echo false
+    else
+        echo true
+    fi
+}
+
+#-----------------------------------------------------------
+#   Function    : CopyFileColumns
+#   CopyFileColumns "$VAR_SOURCE" "$VAR_TARGET" "Div,Date,HomeTeam,AwayTeam,Referee"
+#   https://csvkit.readthedocs.io/en/latest/
+#-----------------------------------------------------------
 CopyFileColumns()
 {
     local strFileSource="$1"
     local strFileTarget="$2"
     local strColumns="$3"
 
+    local strTempFile1=$(mktemp)
+    local strTempFile2=$(mktemp)
+
+    local OIFS=$IFS
+    IFS=,
+    local arrColumns=(${strColumns})
+    IFS=$OIFS
+
     FileExistDelete "$strFileTarget"
-    AddIntoFile "$strFileTarget" ""
 
-    csvcut -c "$strColumns" "$strFileSource" > "$strFileTarget"
+    for Col in ${arrColumns[*]}; do
+        if [ $(ColumnExists "$strFileSource" "$Col") == true ]; then
+            strExist+=( "$Col" )
+        else
+            strDontExist+=( "$Col" )
+        fi
+    done
 
-    echo "NewColumn,NEWCOLUMN2" | csvjoin "$strFileTarget" -> "$strFileTarget.new"
+    # If all columns exist in source
+    if [ "${#strDontExist[*]}" -eq "0" ]; then
+        csvcut -c "$strColumns" "$strFileSource" > "$strFileTarget"
+    else
+    # If not all columns exist
+        csvcut -c "$(JoinArray "," "${strExist[@]}")" "$strFileSource" > "$strTempFile1"
+        echo "$(JoinArray "," "${strDontExist[@]}")" | csvjoin --no-inference "$strTempFile1" -> "$strTempFile2"
 
+        csvcut -c "$strColumns" "$strTempFile2" > "$strFileTarget"
+    fi
 }

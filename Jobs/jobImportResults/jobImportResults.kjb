@@ -318,7 +318,7 @@
       <draw>Y</draw>
       <nr>0</nr>
       <xloc>336</xloc>
-      <yloc>672</yloc>
+      <yloc>784</yloc>
       <attributes_kjc/>
     </entry>
     <entry>
@@ -331,7 +331,7 @@
       <draw>Y</draw>
       <nr>0</nr>
       <xloc>48</xloc>
-      <yloc>672</yloc>
+      <yloc>784</yloc>
       <attributes_kjc/>
     </entry>
     <entry>
@@ -451,7 +451,7 @@
       <draw>Y</draw>
       <nr>0</nr>
       <xloc>544</xloc>
-      <yloc>672</yloc>
+      <yloc>784</yloc>
       <attributes_kjc/>
     </entry>
     <entry>
@@ -473,7 +473,7 @@
       <draw>Y</draw>
       <nr>0</nr>
       <xloc>448</xloc>
-      <yloc>544</yloc>
+      <yloc>656</yloc>
       <attributes_kjc/>
     </entry>
     <entry>
@@ -511,6 +511,8 @@ Count = Count + 1;
 parent_job.setVariable("iCount", Count);
 parent_job.setVariable("sSource_Nm", parent_job.getVariable("PHO_FILE_SOURCE_" + Count));
 parent_job.setVariable("sTarget_Nm", parent_job.getVariable("PHO_FILE_TARGET_" + Count));
+parent_job.setVariable("sTarget_Fix", parent_job.getVariable("PHO_FILE_TARGET_" + Count) + ".fix");
+
 
 if(parent_job.getVariable("PHO_FILE_SOURCE_" + Count) == null )
 {
@@ -582,7 +584,7 @@ true;</script>
       <draw>Y</draw>
       <nr>0</nr>
       <xloc>336</xloc>
-      <yloc>544</yloc>
+      <yloc>656</yloc>
       <attributes_kjc/>
     </entry>
     <entry>
@@ -605,6 +607,59 @@ true;</script>
       <nr>0</nr>
       <xloc>48</xloc>
       <yloc>544</yloc>
+      <attributes_kjc/>
+    </entry>
+    <entry>
+      <name>FixColumns</name>
+      <description/>
+      <type>SHELL</type>
+      <attributes/>
+      <filename/>
+      <work_directory/>
+      <arg_from_previous>N</arg_from_previous>
+      <exec_per_row>N</exec_per_row>
+      <set_logfile>N</set_logfile>
+      <logfile/>
+      <set_append_logfile>N</set_append_logfile>
+      <logext/>
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <insertScript>Y</insertScript>
+      <script>#!/bin/bash
+
+cd ${PHO_SCRIPTS_PATH}
+source ${PHO_SCRIPTS_PATH}/modGeneral
+
+CopyFileColumns "${sTarget_Nm}" "${sTarget_Fix}" "${PHO_IMPORT_COLUMNS}"
+</script>
+      <loglevel>Basic</loglevel>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>336</xloc>
+      <yloc>528</yloc>
+      <attributes_kjc/>
+    </entry>
+    <entry>
+      <name>Dummy 7</name>
+      <description/>
+      <type>SPECIAL</type>
+      <attributes/>
+      <start>N</start>
+      <dummy>Y</dummy>
+      <repeat>N</repeat>
+      <schedulerType>0</schedulerType>
+      <intervalSeconds>0</intervalSeconds>
+      <intervalMinutes>60</intervalMinutes>
+      <hour>12</hour>
+      <minutes>0</minutes>
+      <weekDay>1</weekDay>
+      <DayOfMonth>1</DayOfMonth>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>48</xloc>
+      <yloc>672</yloc>
       <attributes_kjc/>
     </entry>
   </entries>
@@ -701,15 +756,6 @@ true;</script>
     </hop>
     <hop>
       <from>HTTP</from>
-      <to>cvImportFile</to>
-      <from_nr>0</from_nr>
-      <to_nr>0</to_nr>
-      <enabled>Y</enabled>
-      <evaluation>Y</evaluation>
-      <unconditional>N</unconditional>
-    </hop>
-    <hop>
-      <from>HTTP</from>
       <to>Dummy 6</to>
       <from_nr>0</from_nr>
       <to_nr>0</to_nr>
@@ -720,15 +766,6 @@ true;</script>
     <hop>
       <from>Dummy</from>
       <to>Dummy 6</to>
-      <from_nr>0</from_nr>
-      <to_nr>0</to_nr>
-      <enabled>Y</enabled>
-      <evaluation>Y</evaluation>
-      <unconditional>Y</unconditional>
-    </hop>
-    <hop>
-      <from>Dummy 6</from>
-      <to>Abort job</to>
       <from_nr>0</from_nr>
       <to_nr>0</to_nr>
       <enabled>Y</enabled>
@@ -747,6 +784,51 @@ true;</script>
     <hop>
       <from>cvImportFile</from>
       <to>Abort job</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>N</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>HTTP</from>
+      <to>FixColumns</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>FixColumns</from>
+      <to>cvImportFile</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>Dummy 6</from>
+      <to>Dummy 7</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>Y</unconditional>
+    </hop>
+    <hop>
+      <from>Dummy 7</from>
+      <to>Abort job</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>Y</unconditional>
+    </hop>
+    <hop>
+      <from>FixColumns</from>
+      <to>Dummy 7</to>
       <from_nr>0</from_nr>
       <to_nr>0</to_nr>
       <enabled>Y</enabled>
