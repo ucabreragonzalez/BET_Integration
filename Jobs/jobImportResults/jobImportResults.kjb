@@ -318,7 +318,7 @@
       <draw>Y</draw>
       <nr>0</nr>
       <xloc>336</xloc>
-      <yloc>784</yloc>
+      <yloc>992</yloc>
       <attributes_kjc/>
     </entry>
     <entry>
@@ -331,7 +331,7 @@
       <draw>Y</draw>
       <nr>0</nr>
       <xloc>48</xloc>
-      <yloc>784</yloc>
+      <yloc>992</yloc>
       <attributes_kjc/>
     </entry>
     <entry>
@@ -451,7 +451,7 @@
       <draw>Y</draw>
       <nr>0</nr>
       <xloc>544</xloc>
-      <yloc>784</yloc>
+      <yloc>992</yloc>
       <attributes_kjc/>
     </entry>
     <entry>
@@ -483,6 +483,7 @@
       <attributes/>
       <logmessage>--------------------------------------------
 iCount = ${iCount}
+sCritical_YN = ${sSource_Critical_YN}
 sSource_Nm = ${sSource_Nm}
 sTarget_Nm = ${sTarget_Nm}
 --------------------------------------------</logmessage>
@@ -513,6 +514,11 @@ parent_job.setVariable("sSource_Nm", parent_job.getVariable("PHO_FILE_SOURCE_" +
 parent_job.setVariable("sTarget_Nm", parent_job.getVariable("PHO_FILE_TARGET_" + Count));
 parent_job.setVariable("sTarget_Fix", parent_job.getVariable("PHO_FILE_TARGET_" + Count) + ".fix");
 
+parent_job.setVariable("sSource_Critical_YN", "N")
+if(parent_job.getVariable("PHO_CRITICAL_YN_" + Count) == "Y" )
+{
+	parent_job.setVariable("sSource_Critical_YN", "Y");
+}
 
 if(parent_job.getVariable("PHO_FILE_SOURCE_" + Count) == null )
 {
@@ -662,6 +668,74 @@ CopyFileColumns "${sTarget_Nm}" "${sTarget_Fix}" "${PHO_IMPORT_COLUMNS}"
       <yloc>672</yloc>
       <attributes_kjc/>
     </entry>
+    <entry>
+      <name>Dummy 8</name>
+      <description/>
+      <type>SPECIAL</type>
+      <attributes/>
+      <start>N</start>
+      <dummy>Y</dummy>
+      <repeat>N</repeat>
+      <schedulerType>0</schedulerType>
+      <intervalSeconds>0</intervalSeconds>
+      <intervalMinutes>60</intervalMinutes>
+      <hour>12</hour>
+      <minutes>0</minutes>
+      <weekDay>1</weekDay>
+      <DayOfMonth>1</DayOfMonth>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>48</xloc>
+      <yloc>816</yloc>
+      <attributes_kjc/>
+    </entry>
+    <entry>
+      <name>chkIsCritical</name>
+      <description/>
+      <type>SIMPLE_EVAL</type>
+      <attributes/>
+      <valuetype>variable</valuetype>
+      <fieldname/>
+      <variablename>sSource_Critical_YN</variablename>
+      <fieldtype>string</fieldtype>
+      <mask/>
+      <comparevalue>Y</comparevalue>
+      <minvalue/>
+      <maxvalue/>
+      <successcondition>different</successcondition>
+      <successnumbercondition>equal</successnumbercondition>
+      <successbooleancondition>false</successbooleancondition>
+      <successwhenvarset>N</successwhenvarset>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>336</xloc>
+      <yloc>816</yloc>
+      <attributes_kjc/>
+    </entry>
+    <entry>
+      <name>Dummy 4 2</name>
+      <description/>
+      <type>SPECIAL</type>
+      <attributes/>
+      <start>N</start>
+      <dummy>Y</dummy>
+      <repeat>N</repeat>
+      <schedulerType>0</schedulerType>
+      <intervalSeconds>0</intervalSeconds>
+      <intervalMinutes>60</intervalMinutes>
+      <hour>12</hour>
+      <minutes>0</minutes>
+      <weekDay>1</weekDay>
+      <DayOfMonth>1</DayOfMonth>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>448</xloc>
+      <yloc>816</yloc>
+      <attributes_kjc/>
+    </entry>
   </entries>
   <hops>
     <hop>
@@ -782,15 +856,6 @@ CopyFileColumns "${sTarget_Nm}" "${sTarget_Fix}" "${PHO_IMPORT_COLUMNS}"
       <unconditional>N</unconditional>
     </hop>
     <hop>
-      <from>cvImportFile</from>
-      <to>Abort job</to>
-      <from_nr>0</from_nr>
-      <to_nr>0</to_nr>
-      <enabled>Y</enabled>
-      <evaluation>N</evaluation>
-      <unconditional>N</unconditional>
-    </hop>
-    <hop>
       <from>HTTP</from>
       <to>FixColumns</to>
       <from_nr>0</from_nr>
@@ -818,15 +883,6 @@ CopyFileColumns "${sTarget_Nm}" "${sTarget_Fix}" "${PHO_IMPORT_COLUMNS}"
       <unconditional>Y</unconditional>
     </hop>
     <hop>
-      <from>Dummy 7</from>
-      <to>Abort job</to>
-      <from_nr>0</from_nr>
-      <to_nr>0</to_nr>
-      <enabled>Y</enabled>
-      <evaluation>Y</evaluation>
-      <unconditional>Y</unconditional>
-    </hop>
-    <hop>
       <from>FixColumns</from>
       <to>Dummy 7</to>
       <from_nr>0</from_nr>
@@ -834,6 +890,60 @@ CopyFileColumns "${sTarget_Nm}" "${sTarget_Fix}" "${PHO_IMPORT_COLUMNS}"
       <enabled>Y</enabled>
       <evaluation>N</evaluation>
       <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>Dummy 7</from>
+      <to>Dummy 8</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>Y</unconditional>
+    </hop>
+    <hop>
+      <from>cvImportFile</from>
+      <to>Dummy 8</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>N</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>Dummy 8</from>
+      <to>chkIsCritical</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>Y</unconditional>
+    </hop>
+    <hop>
+      <from>chkIsCritical</from>
+      <to>Abort job</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>N</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>chkIsCritical</from>
+      <to>Dummy 4 2</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>Dummy 4 2</from>
+      <to>Dummy 4</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>Y</unconditional>
     </hop>
   </hops>
   <notepads>

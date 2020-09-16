@@ -7,11 +7,16 @@
 #   PHO_VARNAME     Pentaho vars
 #-----------------------------------------------------------
 
-TG_NOTIFY_FINISH_TO=
-TG_NOTIFY_FAILURE_TO="-317185794"
-TG_NOTIFY_SUCCESS_TO=
+if [ "$VAR_ENVIRONMENT" = "PI" ]; then
+	TG_NOTIFY_FINISH_TO=
+    TG_NOTIFY_FAILURE_TO="-317185794"
+    TG_NOTIFY_SUCCESS_TO=
+else
+	TG_NOTIFY_FINISH_TO=
+    TG_NOTIFY_FAILURE_TO=
+    TG_NOTIFY_SUCCESS_TO=
+fi
 
-# England Football Results
 PHO_STORED_NAME="sp_run_strategy"
 
 # Date Format: dd/mm/yyyy

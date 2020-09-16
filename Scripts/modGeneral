@@ -200,6 +200,7 @@ ColumnExists()
 #   Function    : CopyFileColumns
 #   CopyFileColumns "$VAR_SOURCE" "$VAR_TARGET" "Div,Date,HomeTeam,AwayTeam,Referee"
 #   https://csvkit.readthedocs.io/en/latest/
+#   sudo dnf install python3-csvkit
 #-----------------------------------------------------------
 CopyFileColumns()
 {

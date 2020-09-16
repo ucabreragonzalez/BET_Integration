@@ -10,34 +10,34 @@
 Pi()
 {
 	VAR_ENVIRONMENT="PI"
-	VAR_INTE_PATH="$HOME/servers"
-	VAR_DATA_PATH="$HOME/servers"
-	VAR_PDI_PATH="$HOME/Downloads/pdi-ce-8.3.0.0-371"
+	VAR_INTE_PATH="$HOME/Projects/trunk"
+	VAR_DATA_PATH="$HOME/Projects/trunk"
+	VAR_PDI_PATH="$HOME/localApps"
 	PENTAHO_DI_JAVA_OPTIONS="-Xms256m -Xmx512m"
 
-	PHO_DB_HOST="fusionpl.heliohost.org"
+	PHO_DB_HOST="userver"
 	PHO_DB_PORT="3306"
-	PHO_DB_DBNAME="fusionpl_BET_DB"
-	PHO_DB_USER="fusionpl_ucabrera"
+	PHO_DB_DBNAME="BET_DB_P"
+	PHO_DB_USER="ucabrera"
 	PHO_DB_PASS="ucabreraPass"
 }
 
 Dev()
 {
 	VAR_ENVIRONMENT="DEV"
-	VAR_INTE_PATH="$HOME/Documents/projects"
-	VAR_DATA_PATH="$HOME/Documents/projects"
-	VAR_PDI_PATH="$HOME/Downloads/pdi-ce-8.3.0.0-371"
+	VAR_INTE_PATH="$HOME/Projects/DEV"
+	VAR_DATA_PATH="$HOME/Projects/DEV"
+	VAR_PDI_PATH="$HOME/localApps"
 	PENTAHO_DI_JAVA_OPTIONS=
 
-	PHO_DB_HOST="localhost"
+	PHO_DB_HOST="userver"
 	PHO_DB_PORT="3306"
-	PHO_DB_DBNAME="BET_DB"
+	PHO_DB_DBNAME="BET_DB_D"
 	PHO_DB_USER="ucabrera"
-	PHO_DB_PASS="ucabreraPass_2020"
+	PHO_DB_PASS="ucabreraPass"
 }
 
-if [ "$HOSTNAME" = "osmc" ]; then
+if [ "$HOSTNAME" = "userver" ]; then
 	Pi
 else
 	Dev
@@ -46,8 +46,8 @@ fi
 VAR_FORMAT_DATE="%d%m%Y"                                          			# General Format for dates
 VAR_FORMAT_DATE_YEARMONTH="%Y%m"                                            # General Format for dates YM
 VAR_FORMAT_DATEMINSEG="%d/%m/%Y %H:%M:%S"                         			# General Format for date hr:min:ss
-VAR_INTEGRATION_PATH=$VAR_INTE_PATH/Integration
-VAR_INTEGRATION_DATA_PATH=$VAR_DATA_PATH/IntegrationData
+VAR_INTEGRATION_PATH=$VAR_INTE_PATH/BET_Integration
+VAR_INTEGRATION_DATA_PATH=$VAR_DATA_PATH/BET_IntegrationData
 PHO_JOBS_PATH=$VAR_INTEGRATION_PATH/Jobs
 PHO_MODS_PATH=$VAR_INTEGRATION_PATH/Mods
 PHO_SCRIPTS_PATH=$VAR_INTEGRATION_PATH/Scripts
