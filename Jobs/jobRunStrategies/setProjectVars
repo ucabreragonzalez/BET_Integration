@@ -21,7 +21,7 @@ PHO_STORED_NAME="sp_run_strategy"
 
 # Date Format: dd/mm/yyyy
 PHO_DATE_FROM=$(date +"%d/%m/%Y")
-PHO_DATE_TO=$(date --date="2 days" +"%d/%m/%Y")
+PHO_DATE_TO=$(date --date="5 days" +"%d/%m/%Y")
 
 # Examples:
 # PHO_DATE_FROM=$(date --date="yesterday" +"%d/%m/%Y")
