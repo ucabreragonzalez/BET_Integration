@@ -147,6 +147,79 @@ ReplaceString()
 }
 
 #-----------------------------------------------------------
+#   Function    : Right
+#   Date        : 02/08/2015
+#   Objetive    : Return all the characters at the rigth until the positions number.
+#   Parameters  : strText           : Original text
+#                 intPositions      : Positions to return.
+#
+#   Exaple      : Right "Text" Positions
+#-----------------------------------------------------------
+Right()
+{
+    local strText="$1"
+    local intPositions=$2
+    if [ "$strText" != "" ];then
+        echo ${strText:(-$intPositions)}
+    else
+        echo ""
+    fi
+}
+
+#-----------------------------------------------------------
+#   Function    : Left
+#   Date        : 02/08/2015
+#   Objetive    : Return all the characters at the left until the positions number.
+#   Parameters  : strText           : Original text
+#                 intPositions      : Positions to return.
+#
+#   Exaple      : Left "Text" Positions
+#-----------------------------------------------------------
+Left()
+{
+    local strText="$1"
+    local intPositions=$2
+    if [ "$strText" != "" ];then
+        echo ${strText:0:$intPositions}
+    else
+        echo ""
+    fi
+}
+
+#-----------------------------------------------------------
+#   Function    : SplitString
+#   Date        : 02/08/2015
+#   Objetive    : To update the system..
+#   Parameters  : String        : String to being separated
+#                 Separator     : Character or string that saparates the Original String
+#                 VariableToReturn : Name of a variable to store the results
+#                 VariableCount : Name of a variable to store the number of results
+#
+#   Exaple      : SplitString "String" "Separator" "VariableToReturn" "(opt) VariableCount"
+#-----------------------------------------------------------
+SplitString()
+{
+    local strString="$1"
+    local strSeparator="$2"
+    local strVarName="$3"
+    local strVarCount="$4"
+    local OIFS=$IFS
+
+    local arrayResult
+
+    IFS=$strSeparator
+    arrayResult=(${strString})
+
+    eval $strVarName='(${arrayResult[*]})'
+
+    if [ "$strVarCount" != "" ]; then
+        eval $strVarCount='${#arrayResult[*]}'
+    fi
+
+    IFS=$OIFS
+}
+
+#-----------------------------------------------------------
 #   Function    : JoinArray
 #   JoinArray "," "${varArray[@]}"
 #-----------------------------------------------------------
@@ -180,7 +253,7 @@ SendTelegramMessage()
 }
 
 #-----------------------------------------------------------
-#   Function    : CopyFileColumns
+#   Function    : ColumnExists
 #-----------------------------------------------------------
 ColumnExists()
 {
@@ -212,20 +285,47 @@ CopyFileColumns()
     local strTempFile1=$(mktemp)
     local strTempFile2=$(mktemp)
 
-    local OIFS=$IFS
-    IFS=,
-    local arrColumns=(${strColumns})
-    IFS=$OIFS
+    local bFoundLookup=false
 
-    FileExistDelete "$strFileTarget"
+    # get an array with the columns in the list
+    SplitString $strColumns "," arrColumns
 
+    # per each column in the list
     for Col in ${arrColumns[*]}; do
-        if [ $(ColumnExists "$strFileSource" "$Col") == true ]; then
-            strExist+=( "$Col" )
+        # is a lookup one? within {}?
+        if [[ "$Col" == {*} ]]; then
+            bFoundLookup=false
+            tmpCol=$(ReplaceString "$Col" "{" "")
+            tmpCol=$(ReplaceString "$tmpCol" "}" "")
+            SplitString $tmpCol "|" arrLookupColumns
+
+            for LookupCol in ${arrLookupColumns[*]}; do
+                if [ $(ColumnExists "$strFileSource" "$LookupCol") == true ]; then
+                    bFoundLookup=true
+                    break
+                fi
+            done
+
+            if [ $bFoundLookup == true ]; then
+                strExist+=( "$LookupCol" )
+            else
+                strDontExist+=( "$LookupCol" )
+            fi
+            
+            # Found it or not we need to replace from original list
+            strColumns=$(ReplaceString "$strColumns" "$Col" "$LookupCol")
         else
-            strDontExist+=( "$Col" )
+        # then is a normal one
+            if [ $(ColumnExists "$strFileSource" "$Col") == true ]; then
+                strExist+=( "$Col" )
+            else
+                strDontExist+=( "$Col" )
+            fi
         fi
     done
+
+    # Just in case, delete old file
+    FileExistDelete "$strFileTarget"
 
     # If all columns exist in source
     if [ "${#strDontExist[*]}" -eq "0" ]; then

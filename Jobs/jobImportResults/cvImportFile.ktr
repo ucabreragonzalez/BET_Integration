@@ -791,6 +791,28 @@
         <precision>0</precision>
         <trim_type>none</trim_type>
       </field>
+      <field>
+        <name>o25_odd</name>
+        <type>Number</type>
+        <format>#.#</format>
+        <currency>$</currency>
+        <decimal>.</decimal>
+        <group>,</group>
+        <length>4</length>
+        <precision>2</precision>
+        <trim_type>none</trim_type>
+      </field>
+      <field>
+        <name>u25_odd</name>
+        <type>Number</type>
+        <format>#.#</format>
+        <currency>$</currency>
+        <decimal>.</decimal>
+        <group>,</group>
+        <length>4</length>
+        <precision>2</precision>
+        <trim_type>none</trim_type>
+      </field>
     </fields>
     <attributes/>
     <cluster_schema/>
@@ -965,6 +987,16 @@
       <value>
         <name>away_team_red_cards</name>
         <rename>AR</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>o25_odd</name>
+        <rename>o25_odd</rename>
+        <update>Y</update>
+      </value>
+      <value>
+        <name>u25_odd</name>
+        <rename>u25_odd</rename>
         <update>Y</update>
       </value>
     </lookup>

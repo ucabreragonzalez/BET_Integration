@@ -7,9 +7,15 @@
 
 source ./modGeneral
 
-VAR_SOURCE="/home/ucabrera/Downloads/1819 Premier_League_E0.csv"
-VAR_TARGET="/home/ucabrera/Downloads/your-csv.csv"
-VAR_COLS="Div,Date,HomeTeam,AwayTeam,Referee"
+VAR_SOURCE="/home/ucabrera/Projects/DEV/BET_IntegrationData/jobImportFixtures/fixtures.csv"
+VAR_TARGET="/home/ucabrera/Projects/DEV/BET_IntegrationData/jobImportFixtures/your-csv.csv"
+VAR_COLS="Div,Date,Time,HomeTeam,AwayTeam,{B366>2.5|P>2.5|Max>2.5|Avg>2.5},{B366<2.5|PO<2.5|Max<2.5|Avg<2.5}"
+
+# ${sTarget_Nm}
+
+# {B365>2.5|P>2.5|Max>2.5|Avg>2.5},{B365<2.5|P<2.5|Max<2.5|Avg<2.5}
+# o25_odd
+# u25_odd
 
 CopyFileColumns "$VAR_SOURCE" "$VAR_TARGET" "$VAR_COLS"
 
