@@ -17,6 +17,7 @@ else
     TG_NOTIFY_SUCCESS_TO=
 fi
 
+PHO_FILE_ENCODE_GLOBAL="-e iso-8859-1"
 PHO_IMPORT_COLUMNS="Div,Date,Time,HomeTeam,AwayTeam,FTHG,FTAG,FTR,HTHG,HTAG,HTR,Referee,HS,AS,HST,AST,HF,AF,HC,AC,HY,AY,HR,AR,{GB>2.5|B365>2.5|P>2.5|Max>2.5|Avg>2.5|BbAv>2.5|BbMx>2.5},{GB<2.5|B365<2.5|P<2.5|Max<2.5|Avg<2.5|BbAv<2.5|BbMx<2.5}"
 
 TG_FILE_SEASON="2021"
@@ -36,6 +37,7 @@ PHO_FILE_TARGET_4="$PHO_JOB_DATA/$TG_FILE_SEASON-League_2_E3.csv"
 
 PHO_FILE_SOURCE_5="https://www.football-data.co.uk/mmz4281/$TG_FILE_SEASON/EC.csv"
 PHO_FILE_TARGET_5="$PHO_JOB_DATA/$TG_FILE_SEASON-Conference_EC.csv"
+# PHO_FILE_ENCODE_5="-e iso-8859-1"
 # PHO_CRITICAL_YN_5="Y" # N by default
 
 # Scotland Football Results

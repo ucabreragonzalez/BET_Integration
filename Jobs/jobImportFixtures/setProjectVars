@@ -17,8 +17,10 @@ else
     TG_NOTIFY_SUCCESS_TO=
 fi
 
+PHO_FILE_ENCODE_GLOBAL="-e iso-8859-1"
 PHO_IMPORT_COLUMNS="Div,Date,Time,HomeTeam,AwayTeam,{B365>2.5|P>2.5|Max>2.5|Avg>2.5},{B365<2.5|P<2.5|Max<2.5|Avg<2.5}"
 
 # Fixtures
 PHO_FILE_SOURCE_1="https://www.football-data.co.uk/fixtures.csv"
 PHO_FILE_TARGET_1="$PHO_JOB_DATA/fixtures.csv"
+# PHO_FILE_ENCODE_1="-e iso-8859-1"

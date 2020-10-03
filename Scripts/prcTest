@@ -17,6 +17,6 @@ VAR_COLS="Div,Date,Time,HomeTeam,AwayTeam,{B366>2.5|P>2.5|Max>2.5|Avg>2.5},{B366
 # o25_odd
 # u25_odd
 
-CopyFileColumns "$VAR_SOURCE" "$VAR_TARGET" "$VAR_COLS"
+CopyFileColumns "$VAR_SOURCE" "$VAR_TARGET" "$VAR_COLS" "-e iso-8859-1"
 
 # https://github.com/wireservice/csvkit/issues/655

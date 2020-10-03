@@ -13,9 +13,9 @@ Pi()
 	VAR_INTE_PATH="$HOME/Projects/trunk"
 	VAR_DATA_PATH="$HOME/Projects/trunk"
 	VAR_PDI_PATH="$HOME/localApps"
-	PENTAHO_DI_JAVA_OPTIONS="-Xms256m -Xmx512m"
+	# PENTAHO_DI_JAVA_OPTIONS="-Xms256m -Xmx512m"
 
-	PHO_DB_HOST="userver"
+	PHO_DB_HOST="localhost"
 	PHO_DB_PORT="3306"
 	PHO_DB_DBNAME="BET_DB_P"
 	PHO_DB_USER="ucabrera"
@@ -28,9 +28,9 @@ Dev()
 	VAR_INTE_PATH="$HOME/Projects/DEV"
 	VAR_DATA_PATH="$HOME/Projects/DEV"
 	VAR_PDI_PATH="$HOME/localApps"
-	PENTAHO_DI_JAVA_OPTIONS=
+	# PENTAHO_DI_JAVA_OPTIONS=
 
-	PHO_DB_HOST="userver"
+	PHO_DB_HOST="192.168.0.164"
 	PHO_DB_PORT="3306"
 	PHO_DB_DBNAME="BET_DB_D"
 	PHO_DB_USER="ucabrera"

@@ -512,11 +512,17 @@ parent_job.setVariable("iCount", Count);
 parent_job.setVariable("sSource_Nm", parent_job.getVariable("PHO_FILE_SOURCE_" + Count));
 parent_job.setVariable("sTarget_Nm", parent_job.getVariable("PHO_FILE_TARGET_" + Count));
 parent_job.setVariable("sTarget_Fix", parent_job.getVariable("PHO_FILE_TARGET_" + Count) + ".fix");
+parent_job.setVariable("sSource_Encoding", parent_job.getVariable("PHO_FILE_ENCODE_" + Count));
 
 
 if(parent_job.getVariable("PHO_FILE_SOURCE_" + Count) == null )
 {
 	parent_job.setVariable("sSource_Nm", "NA");
+}
+
+if(parent_job.getVariable("PHO_FILE_ENCODE_" + Count) == null )
+{
+	parent_job.setVariable("sSource_Encoding", parent_job.getVariable("PHO_FILE_ENCODE_GLOBAL"));
 }
 
 true;</script>
@@ -630,7 +636,7 @@ true;</script>
 cd ${PHO_SCRIPTS_PATH}
 source ${PHO_SCRIPTS_PATH}/modGeneral
 
-CopyFileColumns "${sTarget_Nm}" "${sTarget_Fix}" "${PHO_IMPORT_COLUMNS}"</script>
+CopyFileColumns "${sTarget_Nm}" "${sTarget_Fix}" "${PHO_IMPORT_COLUMNS}" "${sSource_Encoding}"</script>
       <loglevel>Basic</loglevel>
       <parallel>N</parallel>
       <draw>Y</draw>
