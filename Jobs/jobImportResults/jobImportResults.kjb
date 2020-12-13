@@ -486,6 +486,7 @@ iCount = ${iCount}
 sCritical_YN = ${sSource_Critical_YN}
 sSource_Nm = ${sSource_Nm}
 sTarget_Nm = ${sTarget_Nm}
+iSeason = ${iSeason}
 --------------------------------------------</logmessage>
       <loglevel>Minimal</loglevel>
       <logsubject>Processing</logsubject>
@@ -530,6 +531,9 @@ if(parent_job.getVariable("PHO_FILE_ENCODE_" + Count) == null )
 {
 	parent_job.setVariable("sSource_Encoding", parent_job.getVariable("PHO_FILE_ENCODE_GLOBAL"));
 }
+
+parent_job.setVariable("iSeason", parent_job.getVariable("PHO_FILE_SEASON"));
+
 
 true;</script>
       <parallel>N</parallel>

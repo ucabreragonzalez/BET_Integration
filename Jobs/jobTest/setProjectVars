@@ -7,6 +7,16 @@
 #   PHO_VARNAME     Pentaho vars
 #-----------------------------------------------------------
 
-PHO_CHAT_ID="-360850798"
+PHO_CHAT_ID="331035684"
 PHO_MESSAGE_TEXT="Test 1"
 # PHO_ATTACHMENT_PATH="/home/ucabrera/Downloads/SS.png"
+
+if [ "$VAR_ENVIRONMENT" = "PI" ]; then
+	TG_NOTIFY_FINISH_TO="331035684"
+    TG_NOTIFY_FAILURE_TO="331035684"
+    TG_NOTIFY_SUCCESS_TO=
+else
+	TG_NOTIFY_FINISH_TO=
+    TG_NOTIFY_FAILURE_TO=
+    TG_NOTIFY_SUCCESS_TO=
+fi

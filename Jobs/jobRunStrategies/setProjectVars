@@ -8,7 +8,7 @@
 #-----------------------------------------------------------
 
 if [ "$VAR_ENVIRONMENT" = "PI" ]; then
-	TG_NOTIFY_FINISH_TO=
+    TG_NOTIFY_FINISH_TO="331035684"
     TG_NOTIFY_FAILURE_TO="-317185794"
     TG_NOTIFY_SUCCESS_TO=
 else
@@ -22,6 +22,9 @@ PHO_STORED_NAME="sp_run_strategy"
 # Date Format: dd/mm/yyyy
 PHO_DATE_FROM=$(date +"%d/%m/%Y")
 PHO_DATE_TO=$(date --date="5 days" +"%d/%m/%Y")
+
+# PHO_DATE_FROM=01/01/2018
+# PHO_DATE_TO=02/11/2020
 
 # Examples:
 # PHO_DATE_FROM=$(date --date="yesterday" +"%d/%m/%Y")
