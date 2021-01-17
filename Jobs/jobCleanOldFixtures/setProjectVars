@@ -1,0 +1,20 @@
+#!/bin/bash
+#-----------------------------------------------------------
+#   Autor       : ucabrera
+#   Date        : 17/01/2021
+#   
+#   VAR_VARNAME     Local vars
+#   PHO_VARNAME     Pentaho vars
+#-----------------------------------------------------------
+
+if [ "$VAR_ENVIRONMENT" = "PI" ]; then
+    TG_NOTIFY_FINISH_TO="331035684"
+    TG_NOTIFY_FAILURE_TO="-317185794"
+    TG_NOTIFY_SUCCESS_TO=
+else
+	TG_NOTIFY_FINISH_TO=
+    TG_NOTIFY_FAILURE_TO=
+    TG_NOTIFY_SUCCESS_TO=
+fi
+
+PHO_KEEP_DAYS=15
